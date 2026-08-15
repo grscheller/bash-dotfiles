@@ -19,16 +19,12 @@
 # MSYS2 environment on Windows 11 mintty invokes bash as a login shell.
 #
 
-## configuration file (dotfile) infrastructure
-export DOTFILE_GIT_REPOS=${DOTFILE_GIT_REPOS:$HOME/devel/dotfiles}
-# export BASH_DOTFILE_GIT_REPO=$DOTFILE_GIT_REPOS/bash_dotfiles}
-# export FISH_DOTFILE_GIT_REPO=$DOTFILE_GIT_REPOS/fish_dotfiles}
-# export NVIM_DOTFILE_GIT_REPO=$DOTFILE_GIT_REPOS/nvim_dotfiles}
-# export DEVEL_DOTFILE_GIT_REPO=$DOTFILE_GIT_REPOS/devel_dotfiles}
-export BASH_DOTFILE_GIT_REPO=$DOTFILE_GIT_REPOS
-export FISH_DOTFILE_GIT_REPO=$DOTFILE_GIT_REPOS
-export NVIM_DOTFILE_GIT_REPO=$DOTFILE_GIT_REPOS
-export DEVEL_DOTFILE_GIT_REPO=$DOTFILE_GIT_REPOS
+## configuration file (dotfile) locations - needed for aliases
+export DOTFILE_GIT_REPOS=${DOTFILE_GIT_REPOS:=$HOME/devel/dotfiles}
+export BASH_DOTFILE_GIT_REPO=$DOTFILE_GIT_REPOS/bash-dotfiles
+export FISH_DOTFILE_GIT_REPO=$DOTFILE_GIT_REPOS/fish-dotfiles
+export MISC_DOTFILE_GIT_REPO=$DOTFILE_GIT_REPOS/misc-dotfiles
+export NVIM_DOTFILE_GIT_REPO=$DOTFILE_GIT_REPOS/nvim-dotfiles
 
 ## Get functions and aliases
 
@@ -56,9 +52,6 @@ else
    export EDITOR=vi
    export VISUAL=vi
 fi
-
-# Set up path to dotfiles repo
-export DOTFILE_GIT_REPOS=~/devel/dotfiles
 
 # Location Rust Toolchain
 PATH=~/.cargo/bin:"$PATH"

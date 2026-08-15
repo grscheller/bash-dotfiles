@@ -305,9 +305,8 @@ alias l.='ls -dA .*' # for current directory only
 # single quotes below intentional
 alias bI='$BASH_DOTFILE_GIT_REPO/bin/bashInstall'
 alias fI='$FISH_DOTFILE_GIT_REPO/bin/fishInstall'
+alias mI='$MISC_DOTFILE_GIT_REPO/bin/miscInstall'
 alias nI='$NVIM_DOTFILE_GIT_REPO/bin/nvimInstall'
-alias dI='$DEVEL_DOTFILE_GIT_REPO/bin/develInstall'
-alias aI='$DEVEL_DOTFILE_GIT_REPO/bin/allInstall'
 
 # Website scrapping - pull down a subset of a website
 alias Wget='/usr/bin/wget -p --convert-links -e robots=off'
@@ -370,12 +369,6 @@ PS1="[\s: \w]\n\$ ${TERM_TITLE}"
 PS2='> '
 PS3='#? '
 PS4='++ '
-
-# Ensure SSH key-agent running with your private keys
-if [[ ! -v SSH_AGENT_PID ]]; then
-    printf 'SSH '
-    eval "$(ssh-agent -s)" && ssh-add
-fi
 
 # If installed, use pyenv to manage Python environments
 if digpath -q -x pyenv; then
