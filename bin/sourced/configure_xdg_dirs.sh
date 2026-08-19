@@ -47,5 +47,5 @@ then
     chmod 0755 "$XDG_CACHE_HOME"
 fi
 
-unset _ensure_dirs_exist
+unset _ensure_xdg_dirs_exist
 unset _local_app_data
