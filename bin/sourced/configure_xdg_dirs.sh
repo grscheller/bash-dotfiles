@@ -12,10 +12,10 @@
 if test "$OS" = Windows_NT
 then
     _local_app_data="$(cygpath -u "$LOCALAPPDATA")"
-    : "${XDG_CONFIG_HOME:=$HOME/.config}"
-    : "${XDG_DATA_HOME:=$HOME/.local/share}"
-    : "${XDG_STATE_HOME:=$HOME/.local/state}"
-    : "${XDG_CACHE_HOME:=$HOME/.cache}"
+    : "${XDG_CONFIG_HOME:=$_local_app_data}"
+    : "${XDG_DATA_HOME:=$_local_app_data}"
+    : "${XDG_STATE_HOME:=$_local_app_data}"
+    : "${XDG_CACHE_HOME:=$_local_app_data/Temp}"
     unset _local_app_data
 else
     # Can be overridden for multiple configurations
