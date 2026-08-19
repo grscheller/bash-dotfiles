@@ -9,10 +9,22 @@
 # shellcheck shell=sh
 
 # Script exclusively use these names
-export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:=$HOME/.config}"
-export XDG_CACHE_HOME="${XDG_CACHE_HOME:=$HOME/.cache}"
-export XDG_DATA_HOME="${XDG_DATA_HOME:=$HOME/.local/share}"
-export XDG_STATE_HOME="${XDG_STATE_HOME:=$HOME/.local/state}"
+if test "$OS" = Windows_NT
+then
+    _local_app_data="$(cygpath -u "$LOCALAPPDATA")"
+    : "${XDG_CONFIG_HOME:=$HOME/.config}"
+    : "${XDG_DATA_HOME:=$HOME/.local/share}"
+    : "${XDG_STATE_HOME:=$HOME/.local/state}"
+    : "${XDG_CACHE_HOME:=$HOME/.cache}"
+    unset _local_app_data
+else
+    # Can be overridden for multiple configurations
+    : "${XDG_CONFIG_HOME:=$HOME/.config}"
+    : "${XDG_DATA_HOME:=$HOME/.local/share}"
+    : "${XDG_STATE_HOME:=$HOME/.local/state}"
+    : "${XDG_CACHE_HOME:=$HOME/.cache}"
+fi
+export XDG_CONFIG_HOME XDG_DATA_HOME XDG_STATE_HOME XDG_CACHE_HOME
 
 # Ensure these folder exists before installation.
 ensure_dir "$XDG_CONFIG_HOME" >&2
