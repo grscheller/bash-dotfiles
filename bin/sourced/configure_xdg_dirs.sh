@@ -35,7 +35,7 @@ else
 fi
 export XDG_CONFIG_HOME XDG_DATA_HOME XDG_STATE_HOME XDG_CACHE_HOME
 
-if test "_ensure_dirs_exist" = "yes"
+if test "$_ensure_xdg_dirs_exist" = "yes"
 then
     ensure_dir "$XDG_CONFIG_HOME" >&2
     chmod 0755 "$XDG_CONFIG_HOME"
