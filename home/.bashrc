@@ -369,8 +369,3 @@ PS1="[\s: \w]\n\$ ${TERM_TITLE}"
 PS2='> '
 PS3='#? '
 PS4='++ '
-
-# If installed, use pyenv to manage Python environments
-if digpath -q -x pyenv; then
-    eval "$(pyenv init -)"
-fi
