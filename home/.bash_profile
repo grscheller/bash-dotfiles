@@ -61,8 +61,6 @@ PATH=~/.cabal/bin:~/.local/bin:"$PATH"
 
 # Python configuration
 export PIP_REQUIRE_VIRTUALENV=true
-export PYENV_ROOT=~/.local/share/pyenv
-PATH="$PATH":$PYENV_ROOT/bin
 
 # If there is a ~/bin directory, put near end
 PATH="$PATH":~/bin
