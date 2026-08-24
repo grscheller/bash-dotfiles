@@ -2,9 +2,11 @@
 #
 # grscheller/bash-dotfiles uses these names in its setup scripts.
 #
-# - defaults to standard locations if not already defined
-# - tries to ensures directories exist
-# - failure to create will be indicated via stderr
+# - defaults to standard locations on Linux if not already defined
+# - on Linux tries to ensure directories exist
+# - on Windows 11 set to the corresponding Windows locations
+#   - default Windows locations already exist, their ACL's are not the user's to change
+# - can be overridden for multiple configurations
 #
 # shellcheck shell=sh
 
