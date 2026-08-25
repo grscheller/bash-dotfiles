@@ -349,23 +349,22 @@ HISTCONTROL=ignoredups
 ## Prompt and window decorations
 
 # get hostnames
-MyHostName=$(hostnamectl hostname)
-MyHostName=${MyHostName%%.*}
+TERM_USER="$(id -un)@$(hostname)"
 
 # Terminal window title prompt string
 case $TERM in
 alacritty | cosmic-term | gnome* | xterm*)
-    TERM_TITLE=$'\e]0;'"$(id -un)@${MyHostName}"$'\007'
+    TERM_TITLE=$'\e]0;'"${TERM_USER}"$'\007'
     ;;
 *)
     TERM_TITLE=''
     ;;
 esac
 
-unset MyHostName
-
 # Setup up 3 line prompt
-PS1="[\s: \w]\n\$ ${TERM_TITLE}"
+PS1="[$TERM_USER: \w]\n\$ ${TERM_TITLE}"
 PS2='> '
 PS3='#? '
 PS4='++ '
+
+unset MyHostName
