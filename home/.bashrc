@@ -146,11 +146,12 @@ function pathtrim {
                     s!\(!\\(!g
                     s!\)!\\)!g
                     s!^:!!"
-
-    local PathNormalized DirsCanonicalized Dir addToPath
-    PathNormalized="$(printf %s "$PathRaw" | sed -E -e "$sedScript")"
+    local PathNormalized Dir addToPath
     local -a DirsCanonicalized=()
 
+    PathNormalized="$(printf %s "$PathRaw" | sed -E -e "$sedScript")"
+
+    IFS_OLD="IFS"
     IFS=':'
     for Dir in $PathNormalized
     do
@@ -161,6 +162,7 @@ function pathtrim {
             continue
         fi
 
+        local nn
         ((nn = 0))
         addToPath=
         while ((nn < ${#DirsCanonicalized[@]}))
@@ -178,7 +180,7 @@ function pathtrim {
             DirsCanonicalized[nn]="$Dir"
         fi
     done
-    unset IFS
+    IFS="IFS_OLD"
 
     local PathTrimmed=
     for Dir in "${DirsCanonicalized[@]}"
