@@ -151,7 +151,7 @@ function pathtrim {
 
     PathNormalized="$(printf %s "$PathRaw" | sed -E -e "$sedScript")"
 
-    IFS_OLD="IFS"
+    IFS_OLD="$IFS"
     IFS=':'
     for Dir in $PathNormalized
     do
@@ -180,7 +180,7 @@ function pathtrim {
             DirsCanonicalized[nn]="$Dir"
         fi
     done
-    IFS="IFS_OLD"
+    IFS="$IFS_OLD"
 
     local PathTrimmed=
     for Dir in "${DirsCanonicalized[@]}"
