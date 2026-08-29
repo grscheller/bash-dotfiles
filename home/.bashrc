@@ -13,17 +13,20 @@
 
 #  Jump up multiple directories
 function ud {
-    if (($# > 1)); then
+    if (($# > 1))
+    then
         printf 'Error: ud takes 0 or 1 arguments\n\n'
         return 1
-    elif (($# == 0)) || [[ -z $1 ]]; then
+    elif (($# == 0)) || [[ -z $1 ]]
+    then
         cd ..
         return $?
     fi
 
     local maxUp=-1
     IFS='/'
-    for _dir in $PWD; do
+    for _dir in $PWD
+    do
         ((maxUp++))
     done
     unset IFS _dir
@@ -33,14 +36,17 @@ function ud {
     local uDirs
 
     # user gave a number > 0
-    if [[ $1 == @([1-9])*([0-9]) ]]; then
+    if [[ $1 == @([1-9])*([0-9]) ]]
+    then
         uDirs=$1
-        if ((uDirs < maxUp)); then
+        if ((uDirs < maxUp))
+        then
             ((nDirs = uDirs))
         else
             ((nDirs = maxUp))
         fi
-        until ((nDirs-- <= 1)); do
+        until ((nDirs-- <= 1))
+        do
             upDir=../$upDir
         done
         cd $upDir || return 0
@@ -51,9 +57,12 @@ function ud {
     local cnt=0
     local target="$1"
     # First look for exact match
-    while ((cnt < maxUp)); do
-        if [[ -e $upDir/$target ]]; then
-            if [[ -d $upDir/$target ]]; then
+    while ((cnt < maxUp))
+    do
+        if [[ -e $upDir/$target ]]
+        then
+            if [[ -d $upDir/$target ]]
+            then
                 cd "$upDir/$target" || return 1
             else
                 cd "$upDir" || return 1
@@ -69,9 +78,12 @@ function ud {
     local targetStart="$1"
     local first
     shopt -s nullglob
-    while ((cnt < maxUp)); do
-        for first in "$upDir"/"$targetStart"*; do
-            if [[ -d $first ]]; then
+    while ((cnt < maxUp))
+    do
+        for first in "$upDir"/"$targetStart"*
+        do
+            if [[ -d $first ]]
+            then
                 cd "$first" || {
                     shopt -u nullglob
                     return 1
@@ -96,7 +108,8 @@ function ud {
 # Similar to the DOS path command
 function pa {
     local PathWord
-    if (($# == 0)); then
+    if (($# == 0))
+    then
         PathWord="$PATH"
     else
         PathWord="$1"
@@ -111,7 +124,8 @@ function pa {
 
 # remove duplicates and standardize $PATH components
 function pathtrim {
-    if [[ $# -ne 1 ]]; then
+    if [[ $# -ne 1 ]]
+    then
         printf 'Error: pathtrim takes exactly one argument\n\n'
         return 1
     fi
@@ -135,11 +149,13 @@ function pathtrim {
 
     local PathNormalized DirsCanonicalized Dir addToPath
     PathNormalized="$(printf %s "$PathRaw" | sed -E -e "$sedScript")"
-    DirsCanonicalized=
+    local -a DirsCanonicalized=()
 
     IFS=':'
-    for Dir in $PathNormalized; do
-        if [[ -d $Dir ]]; then
+    for Dir in $PathNormalized
+    do
+        if [[ -d $Dir ]]
+        then
             Dir="$(readlink --canonicalize-existing "$Dir")"
         else
             continue
@@ -147,23 +163,32 @@ function pathtrim {
 
         ((nn = 0))
         addToPath=
-        while ((nn < ${#DirsCanonicalized[@]})); do
-            if [[ $Dir == "${DirsCanonicalized[$nn]}" ]]; then
+        while ((nn < ${#DirsCanonicalized[@]}))
+        do
+            if [[ $Dir == "${DirsCanonicalized[$nn]}" ]]
+            then
                 unset addToPath
                 break
             fi
             ((nn++))
         done
 
-        if [[ -v addToPath ]]; then
+        if [[ -v addToPath ]]
+        then
             DirsCanonicalized[nn]="$Dir"
         fi
     done
     unset IFS
 
-    PathTrimmed=
-    for Dir in "${DirsCanonicalized[@]}"; do
-        PathTrimmed="$PathTrimmed:$Dir"
+    local PathTrimmed=
+    for Dir in "${DirsCanonicalized[@]}"
+    do
+        if test -n "$PathTrimmed"
+        then
+            PathTrimmed="$PathTrimmed:$Dir"
+        else
+            PathTrimmed=$Dir
+        fi
     done
     printf '%s\n' "${PathTrimmed}"
 
@@ -178,7 +203,8 @@ function pathtrim {
 function digpath {
     local OPTIND opt
     local quiet_flag=
-    while getopts :qx opt; do
+    while getopts :qx opt
+    do
         case $opt in
         q)
             quiet_flag=1
@@ -198,13 +224,18 @@ function digpath {
     ii=0
 
     IFS=':'
-    for File in "$@"; do
+    for File in "$@"
+    do
         [[ -z $File ]] && continue
-        for Dir in $PATH; do
+        for Dir in $PATH
+        do
             [[ ! -d $Dir ]] && continue
-            for Target in $Dir/$File; do
-                if [[ -e $Target ]] || [[ -L $Target ]]; then
-                    if [[ -z $executable_flag ]] || [[ -x $Target ]]; then
+            for Target in $Dir/$File
+            do
+                if [[ -e $Target ]] || [[ -L $Target ]]
+                then
+                    if [[ -z $executable_flag ]] || [[ -x $Target ]]
+                    then
                         FileList[ii++]="$Target"
                     fi
                 fi
@@ -215,7 +246,8 @@ function digpath {
 
     [[ -z $quiet_flag ]] && printf '%s\n' "${FileList[@]}"
 
-    if ((${#FileList[@]} > 0)); then
+    if ((${#FileList[@]} > 0))
+    then
         return 0
     else
         return 1
@@ -224,7 +256,8 @@ function digpath {
 
 # Archive eXtractor: usage: ax <file>
 function ax {
-    if [[ -f $1 ]]; then
+    if [[ -f $1 ]]
+    then
         case $1 in
         *.tar) tar -xvf "$1" ;;
         *.tar.bz2) tar -xjvf "$1" ;;
@@ -246,7 +279,8 @@ function ax {
         *) printf 'ax: error: "%s" unknown file type' "$1" >&2 ;;
         esac
     else
-        if [[ -n $1 ]]; then
+        if [[ -n $1 ]]
+        then
             printf 'ax: error: "%s" is not a file' "$1" >&2
         else
             printf 'ax: error: No file argument given' >&2
@@ -263,13 +297,17 @@ function fm {
 
 # Terminal which inherits environment of parent shell
 function tm {
-    if [[ -x /usr/bin/alacritty ]]; then
+    if [[ -x /usr/bin/alacritty ]]
+    then
         (/usr/bin/alacritty &)
-    elif [[ -x /usr/bin/cosmic-term ]]; then
+    elif [[ -x /usr/bin/cosmic-term ]]
+    then
         (/usr/bin/cosmic-term &)
-    elif [[ -x /usr/bin/gnome-terminal ]]; then
+    elif [[ -x /usr/bin/gnome-terminal ]]
+    then
         (/usr/bin/gnome-terminal >/dev/null 2>&1 &)
-    elif [[ -x /usr/bin/xterm ]]; then
+    elif [[ -x /usr/bin/xterm ]]
+    then
         (/usr/bin/xterm >/dev/null 2>&1 &)
     else
         printf "error: no terminal emulator found\n" >&2
@@ -283,7 +321,8 @@ function ev {
 
 # Firefox Browser
 function ff {
-    if digpath -q firefox; then
+    if digpath -q firefox
+    then
         (firefox "$@" >&- 2>&- &)
     else
         printf 'firefox not found\n' >&2
