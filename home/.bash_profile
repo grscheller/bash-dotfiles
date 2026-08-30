@@ -53,17 +53,5 @@ else
    export VISUAL=vi
 fi
 
-# Location Rust Toolchain
-PATH=~/.cargo/bin:"$PATH"
-
-# Haskell locations used by Cabal and Stack
-PATH=~/.cabal/bin:~/.local/bin:"$PATH"
-
-# Python configuration
-export PIP_REQUIRE_VIRTUALENV=true
-
-# If there is a ~/bin directory, put near end
-PATH="$PATH":~/bin
-
 ## Clean up PATH
 PATH="$(pathtrim "$PATH")"

@@ -299,12 +299,12 @@ function fm {
 
 # Terminal which inherits environment of parent shell
 function tm {
-    if [[ -x /usr/bin/alacritty ]]
-    then
-        (/usr/bin/alacritty &)
-    elif [[ -x /usr/bin/cosmic-term ]]
+    if [[ -x /usr/bin/cosmic-term ]]
     then
         (/usr/bin/cosmic-term &)
+    elif [[ -x /usr/bin/alacritty ]]
+    then
+        (/usr/bin/alacritty &)
     elif [[ -x /usr/bin/gnome-terminal ]]
     then
         (/usr/bin/gnome-terminal >/dev/null 2>&1 &)
@@ -407,5 +407,3 @@ PS1="[$TERM_USER: \w]\n\$ ${TERM_TITLE}"
 PS2='> '
 PS3='#? '
 PS4='++ '
-
-unset MyHostName
