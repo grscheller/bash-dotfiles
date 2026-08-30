@@ -24,12 +24,14 @@ function ud {
     fi
 
     local maxUp=-1
+    local ifs_old="$IFS"
     IFS='/'
     for _dir in $PWD
     do
         ((maxUp++))
     done
-    unset IFS _dir
+    unset _dir
+    IFS="$ifs_old"
 
     local upDir=..
     local nDirs
@@ -151,7 +153,7 @@ function pathtrim {
 
     PathNormalized="$(printf %s "$PathRaw" | sed -E -e "$sedScript")"
 
-    IFS_OLD="$IFS"
+    local ifs_old="$IFS"
     IFS=':'
     for Dir in $PathNormalized
     do
@@ -180,7 +182,7 @@ function pathtrim {
             DirsCanonicalized[nn]="$Dir"
         fi
     done
-    IFS="$IFS_OLD"
+    IFS="$ifs_old"
 
     local PathTrimmed=
     for Dir in "${DirsCanonicalized[@]}"
@@ -225,6 +227,7 @@ function digpath {
     FileList=
     ii=0
 
+    local ifs_old="$IFS"
     IFS=':'
     for File in "$@"
     do
@@ -244,7 +247,7 @@ function digpath {
             done
         done
     done
-    unset IFS
+    IFS="$ifs_old"
 
     [[ -z $quiet_flag ]] && printf '%s\n' "${FileList[@]}"
 
