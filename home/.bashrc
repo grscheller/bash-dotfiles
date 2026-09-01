@@ -208,13 +208,13 @@ function pathtrim {
 function digpath {
     local OPTIND opt
     local quiet_flag=
-    local executable_flag=
+    local executable_flag=0
     while getopts :qx opt
     do
         case $opt in
         q) quiet_flag=1 ;;
         x) executable_flag=1 ;;
-        *) local msg="usage: digpath [-q] [-x] 'glob1' ['glob2' 'glab3' ...]"
+        *) local msg="usage: digpath [-q] [-x] 'glob1' ['glob2' 'glob3' ...]"
            printf '%s\n' "$msg"
            return 2 ;;
         esac
@@ -237,7 +237,7 @@ function digpath {
             do
                 if [[ -e $Target ]] || [[ -L $Target ]]
                 then
-                    if [[ -z $executable_flag ]] || [[ -x $Target ]]
+                    if ((executable_flag == 0)) || [[ -x $Target ]]
                     then
                         file_list[ii++]="$Target"
                     fi
