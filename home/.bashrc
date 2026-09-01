@@ -214,7 +214,8 @@ function digpath {
         case $opt in
         q) quiet_flag=1 ;;
         x) executable_flag=1 ;;
-        *) printf "usage: digpath [-q] [-x] 'glob1' ['glob2' 'glab3' ...]"
+        *) local msg="usage: digpath [-q] [-x] 'glob1' ['glob2' 'glab3' ...]"
+           printf '%s\n' "$msg"
            return 2 ;;
         esac
     done
