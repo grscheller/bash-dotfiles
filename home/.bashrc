@@ -22,66 +22,67 @@ function ud {
         return $?
     fi
 
-    local maxUp=-1
     local ifs_old="$IFS"
     IFS='/'
-    for _dir in $PWD
+
+    local max_up=-1
+    local Dir
+    for Dir in $PWD
     do
         ((maxUp++))
     done
-    unset _dir
+
     IFS="$ifs_old"
 
-    local upDir=..
-    local nDirs
-    local uDirs
+    local up=..
+    local num_dirs
+    local cnt=0
+    local target="$1"
 
     # user gave a number > 0
-    if [[ $1 == @([1-9])*([0-9]) ]]
+    if [[ $target == @([1-9])*([0-9]) ]]
     then
-        uDirs=$1
-        if ((uDirs < maxUp))
+        if ((target < max_up))
         then
-            ((nDirs = uDirs))
+            ((num_dirs = target))
         else
-            ((nDirs = maxUp))
+            ((num_dirs = max_up))
         fi
-        until ((nDirs-- <= 1))
+        until ((num_dirs-- <= 1))
         do
-            upDir=../$upDir
+            up=../$up
         done
-        cd $upDir || return 0
+        cd $up || return 0
         return 1
     fi
 
     # user gave a target to find
-    local cnt=0
-    local target="$1"
     # First look for exact match
-    while ((cnt < maxUp))
+    while ((cnt < max_up))
     do
-        if [[ -e $upDir/$target ]]
+        if [[ -e $up/$target ]]
         then
-            if [[ -d $upDir/$target ]]
+            if [[ -d $up/$target ]]
             then
-                cd "$upDir/$target" || return 1
+                cd "$up/$target" || return 1
             else
-                cd "$upDir" || return 1
+                cd "$up" || return 1
             fi
             return 0
         fi
-        upDir=../$upDir
+        up=../$up
         ((cnt++))
     done
+
     # Otherwise, find an initial string match
     cnt=0
-    upDir=..
-    local targetStart="$1"
+    up=..
+    local target_start="$1"
     local first
     shopt -s nullglob
-    while ((cnt < maxUp))
+    while ((cnt < max_up))
     do
-        for first in "$upDir"/"$targetStart"*
+        for first in "$up"/"$target_start"*
         do
             if [[ -d $first ]]
             then
@@ -90,7 +91,7 @@ function ud {
                     return 1
                 }
             else
-                cd "$upDir" || {
+                cd "$up" || {
                     shopt -u nullglob
                     return 1
                 }
@@ -98,7 +99,7 @@ function ud {
             shopt -u nullglob
             return 0
         done
-        upDir=../$upDir
+        up=../$up
         ((cnt++))
     done
     printf 'ud: "%s" not found in any higher directory\n\n' "$target"
@@ -108,18 +109,18 @@ function ud {
 
 # Similar to the DOS path command
 function pa {
-    local PathWord
+    local path_word
     if (($# == 0))
     then
-        PathWord="$PATH"
+        path_word="$PATH"
     else
-        PathWord="$1"
+        path_word="$1"
     fi
 
     # shellcheck disable=SC2086
     (
         IFS=':'
-        printf '%s\n' $PathWord
+        printf '%s\n' $path_word
     )
 }
 
@@ -130,31 +131,32 @@ function pathtrim {
         printf 'Error: pathtrim takes exactly one argument\n\n'
         return 1
     fi
-    local PathRaw="$1"
+    local path_raw="$1"
 
     # Sed script to standardize the $PATH list:
     # - remove redundant / and :
     # - remove trailing /'s on directory names
     # - replace /./ -> /
     # - escape tabs, spaces, and parentheses
-    local sedScript="s!/+!/!g
-                    s!:+!:!g
-                    s!([^:])/:!\1:!g
-                    s!/\./!/!g
-                    s!:\./!:!g
-                    s! !\\ !g
-                    s!	!\\	!g
-                    s!\(!\\(!g
-                    s!\)!\\)!g
-                    s!^:!!"
-    local PathNormalized Dir addToPath
-    local -a DirsCanonicalized=()
+    local sed_script="s!/+!/!g
+                      s!:+!:!g
+                      s!([^:])/:!\1:!g
+                      s!/\./!/!g
+                      s!:\./!:!g
+                      s! !\\ !g
+                      s!	!\\	!g
+                      s!\(!\\(!g
+                      s!\)!\\)!g
+                      s!^:!!"
+    local path_normalized Dir add_to_path_flag
+    local -a dirs_canonicalized=()
 
-    PathNormalized="$(printf %s "$PathRaw" | sed -E -e "$sedScript")"
+    path_normalized="$(printf %s "$path_raw" | sed -E -e "$sed_script")"
 
     local ifs_old="$IFS"
     IFS=':'
-    for Dir in $PathNormalized
+
+    for Dir in $path_normalized
     do
         if [[ -d $Dir ]]
         then
@@ -163,37 +165,37 @@ function pathtrim {
             continue
         fi
 
-        local nn
-        ((nn = 0))
-        addToPath=
-        while ((nn < ${#DirsCanonicalized[@]}))
+        local nn=0
+        add_to_path_flag=
+        while ((nn < ${#dirs_canonicalized[@]}))
         do
-            if [[ $Dir == "${DirsCanonicalized[$nn]}" ]]
+            if [[ $Dir == "${dirs_canonicalized[$nn]}" ]]
             then
-                unset addToPath
+                unset add_to_path_flag
                 break
             fi
             ((nn++))
         done
 
-        if [[ -v addToPath ]]
+        if [[ -v add_to_path_flag ]]
         then
-            DirsCanonicalized[nn]="$Dir"
+            dirs_canonicalized[nn]="$Dir"
         fi
     done
+
     IFS="$ifs_old"
 
-    local PathTrimmed=
-    for Dir in "${DirsCanonicalized[@]}"
+    local path_trimmed=
+    for Dir in "${dirs_canonicalized[@]}"
     do
-        if test -n "$PathTrimmed"
+        if test -n "$path_trimmed"
         then
-            PathTrimmed="$PathTrimmed:$Dir"
+            path_trimmed="$path_trimmed:$Dir"
         else
-            PathTrimmed=$Dir
+            path_trimmed=$Dir
         fi
     done
-    printf '%s\n' "${PathTrimmed}"
+    printf '%s\n' "${path_trimmed}"
 
     return 0
 }
@@ -206,28 +208,24 @@ function pathtrim {
 function digpath {
     local OPTIND opt
     local quiet_flag=
+    local executable_flag=
     while getopts :qx opt
     do
         case $opt in
-        q)
-            quiet_flag=1
-            ;;
-        x)
-            executable_flag=1
-            ;;
-        ?)
-            printf "usage: digpath [-q] [-x] 'glob1' ['glob2' 'glab3' ...]"
-            return 2
-            ;;
+        q) quiet_flag=1 ;;
+        x) executable_flag=1 ;;
+        ?) printf "usage: digpath [-q] [-x] 'glob1' ['glob2' 'glab3' ...]"
+           return 2 ;;
         esac
     done
 
-    local Dir File FileList ii Target
-    FileList=
-    ii=0
+    local Dir File Target
+    local -a file_list=()
+    local ii=0
 
     local ifs_old="$IFS"
     IFS=':'
+
     for File in "$@"
     do
         [[ -z $File ]] && continue
@@ -240,17 +238,18 @@ function digpath {
                 then
                     if [[ -z $executable_flag ]] || [[ -x $Target ]]
                     then
-                        FileList[ii++]="$Target"
+                        file_list[ii++]="$Target"
                     fi
                 fi
             done
         done
     done
+
     IFS="$ifs_old"
 
-    [[ -z $quiet_flag ]] && printf '%s\n' "${FileList[@]}"
+    [[ -z $quiet_flag ]] && printf '%s\n' "${file_list[@]}"
 
-    if ((${#FileList[@]} > 0))
+    if ((${#file_list[@]} > 0))
     then
         return 0
     else
@@ -297,9 +296,9 @@ function ax {
 
 #  Open Desktop file manager
 function fm {
-    local DiR="$1"
-    [[ -n $DiR ]] || DiR="$PWD"
-    xdg-open "$DiR" 2>/dev/null &
+    local Dir="$1"
+    [[ -n $Dir ]] || Dir="$PWD"
+    xdg-open "$Dir" 2>/dev/null &
 }
 
 # Terminal which inherits environment of parent shell
