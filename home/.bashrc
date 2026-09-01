@@ -6,10 +6,9 @@
 # Primarily as a fallback when fish is unavailable.
 #
 
-## If not interactive, don't do anything.
-[[ $- != *i* ]] && return
+### First part for both interactive & non-interactive shells.
 
-## Shell functions
+## Non-GUI related Shell functions
 
 #  Jump up multiple directories
 function ud {
@@ -293,6 +292,9 @@ function ax {
     fi
 }
 
+### For non-interactive shells, omit the rest.
+[[ $- != *i* ]] && return
+
 #  Open Desktop file manager
 function fm {
     local DiR="$1"
@@ -408,5 +410,4 @@ esac
 # Setup up 3 line prompt
 PS1="[$TERM_USER: \w]\n\$ ${TERM_TITLE}"
 PS2='> '
-PS3='#? '
-PS4='++ '
+PS4='+ ${BASH_SOURCE}:${LINENO}: '

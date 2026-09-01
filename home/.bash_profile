@@ -56,8 +56,14 @@ fi
 ## Clean up PATH
 PATH="$(pathtrim "$PATH")"
 
-## Launch Fish Shell if available and not a descendant of a fish shell
-if [[ ! -v FISH_VIRGIN_PATH_GRS ]] && digpath -x -q fish
+## Launch fish if available and not already descended from one.
+##
+## Deliberately not `exec` -- exiting fish drops back to a bash
+## uncontaminated by fish configuration. That is the shell for
+## fixing a broken fish config or bootstrapping onto a new system,
+## which is also why nothing above adds to $PATH beyond what the
+## system provides.
+if [[ $- == *i* ]] && [[ ! -v FISH_VIRGIN_PATH_GRS ]] && digpath -x -q fish
 then
     fish
 fi
