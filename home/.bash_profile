@@ -55,3 +55,9 @@ fi
 
 ## Clean up PATH
 PATH="$(pathtrim "$PATH")"
+
+## Launch Fish Shell if available and not a descendant of a fish shell
+if [[ ! -v FISH_VIRGIN_PATH_GRS ]] && digpath -x -q fish
+then
+    fish
+fi
