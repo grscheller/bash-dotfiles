@@ -148,7 +148,7 @@ function pathtrim {
                       s!\(!\\(!g
                       s!\)!\\)!g
                       s!^:!!"
-    local path_normalized Dir add_to_path_flag
+    local add_to_path Dir nn path_normalized
     local -a dirs_canonicalized=()
 
     path_normalized="$(printf %s "$path_raw" | sed -E -e "$sed_script")"
@@ -165,19 +165,19 @@ function pathtrim {
             continue
         fi
 
-        local nn=0
-        add_to_path_flag=
+        nn=-1
+        add_to_path=1
         while ((nn < ${#dirs_canonicalized[@]}))
         do
+            ((nn++))
             if [[ $Dir == "${dirs_canonicalized[$nn]}" ]]
             then
-                unset add_to_path_flag
+                add_to_path=0
                 break
             fi
-            ((nn++))
         done
 
-        if [[ -v add_to_path_flag ]]
+        if ((add_to_path == 1))
         then
             dirs_canonicalized[nn]="$Dir"
         fi
