@@ -31,6 +31,7 @@ umask 0022
 
 . ../bin/sourced/parse_cmdline.sh
 . ../bin/sourced/functions.sh
+. ../bin/sourced/determine_os.sh  # currently not needed
 
 bash_files='
     .bash_logout
